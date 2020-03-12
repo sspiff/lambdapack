@@ -14,31 +14,42 @@ const packageConfig = JSON.parse(
   fs.readFileSync(path.join(appRoot, 'package.json')))
 const packageMain = path.relative('.',
   path.normalize(path.join(appRoot, packageConfig.main || 'index.js')))
-
-
+// lambdapack config from package.json
+const lambdaConfig = packageConfig.lambdapack || {}
+const userWebpackConfig = lambdaConfig.webpack || {}
 // output zip file name based on package name
 const outZipName = `${packageConfig.name}.zip`
 
 
-// craft webpack config
-const baseWebpackConfig = {
+// required webpack config
+const requiredWebpackConfig = {
   output: {
     path: '/dist',
     libraryTarget: 'commonjs2',
   },
-  mode: 'production',  // enables tree-shaking
   target: 'node',
+}
+
+// default overrideable webpack config
+const defaultWebpackConfig = {
+  mode: 'production',  // enables tree-shaking
   optimization: {
     minimize: false,   // helps with debugging in the aws console
   },
 }
+
+// craft our runtime webpack config
 const webpackConfig = {
-  ...baseWebpackConfig,
+  ...defaultWebpackConfig,
+  entry: `./${packageMain}`,
+  ...userWebpackConfig,
+  ...requiredWebpackConfig,
   output: {
-    ...baseWebpackConfig.output,
-    filename: path.basename(packageMain)
+    ...defaultWebpackConfig.output || {},
+    filename: path.basename(packageMain),
+    ...userWebpackConfig.output || {},
+    ...requiredWebpackConfig.output || {},
   },
-  entry: `./${packageMain}`
 }
 
 
