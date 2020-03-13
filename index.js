@@ -17,8 +17,13 @@ const packageMain = path.relative('.',
 // lambdapack config from package.json
 const lambdaConfig = packageConfig.lambdapack || {}
 const userWebpackConfig = lambdaConfig.webpack || {}
+
+
 // output zip file name based on package name
 const outZipName = `${packageConfig.name}.zip`
+// use a fixed date for zip contents as aws tooling uses hashes of
+// file contents to detect when deployment packages have changed
+const zipContentsDate = new Date('Thu Mar 12 15:45:19 2020 -0400')
 
 
 // required webpack config
@@ -90,9 +95,14 @@ compileDone.then(() => {
     .forEach(f => {
         console.log(`    ${f}`)
         zip.file(
-          f,
-          outfs.createReadStream(`${webpackConfig.output.path}/${f}`),
-          {binary: true, compression: 'DEFLATE'})
+            f,
+            outfs.createReadStream(`${webpackConfig.output.path}/${f}`),
+            {
+              binary: true,
+              compression: 'DEFLATE',
+              date: zipContentsDate,
+            }
+          )
       })
   zip
     .generateNodeStream({type: 'nodebuffer', streamFiles: true})
