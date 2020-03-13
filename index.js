@@ -92,6 +92,7 @@ compileDone.then(() => {
   outfs.readdirSync(webpackConfig.output.path, {withFileTypes: true})
     .filter(i => i.isFile())
     .map(i => i.name)
+    .sort()
     .forEach(f => {
         console.log(`    ${f}`)
         zip.file(
