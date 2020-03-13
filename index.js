@@ -11,8 +11,8 @@ const webpack = require('webpack')
 const packageConfig = JSON.parse(fs.readFileSync('package.json'))
 const packageMain = packageConfig.main || 'index.js'
 // lambdapack config from package.json
-const lambdaConfig = packageConfig.lambdapack || {}
-const userWebpackConfig = lambdaConfig.webpack || {}
+const lambdapackConfig = packageConfig.lambdapack || {}
+const userWebpackConfig = lambdapackConfig.webpack || {}
 
 
 // output zip file name based on package name
