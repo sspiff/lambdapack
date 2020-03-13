@@ -1,7 +1,7 @@
 {
   "name": "lambdapack",
   "version": "0.1.0",
-  "description": "Quick and dirty packer for AWS Lambda",
+  "description": "Bundles modules for the AWS Lambda Node.js runtime (using webpack)",
   "main": "index.js",
   "bin": "./index.js",
   "files": "*.js",
