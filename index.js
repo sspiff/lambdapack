@@ -24,7 +24,7 @@ const outZipName = `${packageConfig.name}.zip`
 // required webpack config
 const requiredWebpackConfig = {
   output: {
-    path: '/dist',
+    path: '/zipcontents',
     libraryTarget: 'commonjs2',
   },
   target: 'node',
@@ -84,12 +84,14 @@ const JSZip = require('jszip')
 compileDone.then(() => {
   console.log(`lambdapack ${outZipName}:`)
   const zip = new JSZip()
-  outfs.readdirSync('/dist', {withFileTypes: true})
+  outfs.readdirSync(webpackConfig.output.path, {withFileTypes: true})
     .filter(i => i.isFile())
     .map(i => i.name)
     .forEach(f => {
         console.log(`    ${f}`)
-        zip.file(f, outfs.readFileSync(`/dist/${f}`, 'utf8'),
+        zip.file(
+          f,
+          outfs.readFileSync(`${webpackConfig.output.path}/${f}`, 'utf8'),
           {compression: 'DEFLATE'})
       })
   zip
