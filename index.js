@@ -91,8 +91,8 @@ compileDone.then(() => {
         console.log(`    ${f}`)
         zip.file(
           f,
-          outfs.readFileSync(`${webpackConfig.output.path}/${f}`, 'utf8'),
-          {compression: 'DEFLATE'})
+          outfs.createReadStream(`${webpackConfig.output.path}/${f}`),
+          {binary: true, compression: 'DEFLATE'})
       })
   zip
     .generateNodeStream({type: 'nodebuffer', streamFiles: true})
