@@ -11,7 +11,6 @@
   "author": "sspiff",
   "license": "ISC",
   "dependencies": {
-    "app-root-path": "^3.0.0",
     "jszip": "^3.2.2",
     "memfs": "^3.1.1",
     "webpack": "^4.41.6"

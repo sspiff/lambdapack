@@ -6,14 +6,10 @@ const path = require('path')
 const {createFsFromVolume, Volume} = require('memfs')
 const webpack = require('webpack')
 
-const appRoot = require('app-root-path').toString()
-
 
 // load package.json
-const packageConfig = JSON.parse(
-  fs.readFileSync(path.join(appRoot, 'package.json')))
-const packageMain = path.relative('.',
-  path.normalize(path.join(appRoot, packageConfig.main || 'index.js')))
+const packageConfig = JSON.parse(fs.readFileSync('package.json'))
+const packageMain = packageConfig.main || 'index.js'
 // lambdapack config from package.json
 const lambdaConfig = packageConfig.lambdapack || {}
 const userWebpackConfig = lambdaConfig.webpack || {}
