@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/sspiff/lambdapack#readme",
   "dependencies": {
-    "jszip": "^3.2.2",
+    "jszip": "^3.5.0",
     "memfs": "^3.1.1",
     "webpack": "^4.41.6"
   }
