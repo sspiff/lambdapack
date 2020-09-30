@@ -102,3 +102,34 @@ To mitigate this, lambdapack applies a fixed timestamp to the files in the
 zip archive.  If the webpack output does not change from one run to the next,
 the zip archives produced by lambdapack should be identical.
 
+## `make` Dependency Generation
+
+lambdapack is capable of outputting dependency information as rules for `make`
+using the stats data provided by webpack.  This can be useful in AWS projects
+with multiple lambdas that share common (but unpackaged) project-specific
+modules.
+
+The generated rules will include the zip file as a target with the webpack
+bundle's assets' source files as the zip's dependencies.  However, all assets
+from `node_modules` will be represented by a single dependency on
+`node_modules` itself.
+
+The following command line options control `make` dependency generation:
+
+<pre>
+-MD [-MP] [-MF <em>OUTFILE</em>] [-MT <em>TARGET</em>] [-MR <em>SRCPREFIX</em>]
+</pre>
+
+Where:
+
+* `-MD` enables `make` dependency generation.
+* `-MP` adds an empty phony target for each dependency.  This can prevent
+errors from `make` if a dependency is later removed.
+* `OUTFILE` is the name of the file where the rules are written.  Defaults to
+the name of the output zip file with `.d` appended.
+* `TARGET` is the target to define in the generated rules.  Defaults to the
+name of the output zip file.
+* `SRCPREFIX` is prepended to each dependency in the rules.  This can
+be useful if lambdapack is invoked in a directory different from where
+`make` is run.
+
