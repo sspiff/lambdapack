@@ -3,6 +3,7 @@
 
 // grok our command line
 //
+// -o output zip file
 // -MD
 // -MT target
 // -MP prereqs as targets
@@ -21,6 +22,8 @@ for (let i = 2; i < process.argv.length; ) {
     argv.MR = process.argv[++i]
   else if (process.argv[i] === '-MT')
     argv.MT = process.argv[++i]
+  else if (process.argv[i] === '-o')
+    argv.o = process.argv[++i]
   i++
 }
 
@@ -41,7 +44,7 @@ const userWebpackConfig = lambdapackConfig.webpack || {}
 
 
 // output zip file name based on package name
-const outZipName = `${packageConfig.name}.zip`
+const outZipName = argv.o || `${packageConfig.name}.zip`
 // use a fixed date for zip contents as aws tooling uses hashes of
 // file contents to detect when deployment packages have changed
 const zipContentsDate = new Date('Thu Mar 12 15:45:19 2020 -0400')

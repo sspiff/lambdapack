@@ -34,22 +34,54 @@ for the Lambda would be `index.HANDLER` (where `HANDLER` is the name of a
 function exported by `index.js`).
 
 
-## ES6 and webpack Optimization
+## Invoking lambdapack
 
-lambdapack is intended for use with ES6-style module imports and exports
-(though their use may not be required).  It is known to work when the Lambda
-handler is exported from the main/entry file as an ES6 named export.
+### Synopsis:
 
-For optimizing deployment package size, lambdapack relies entirely on related
-features of webpack, including tree shaking.  As tree shaking requires ES6
-module syntax, better results may be had with shake-friendly modules:
-those that use `import`/`export` and that accurately advertise `sideEffects`.
+<pre>
+node_modules/.bin/lambdapack
+  [-o <em>OUTZIP</em>]
+  [-MD [-MP] [-MF <em>OUTDEPS</em>]
+       [-MT <em>TARGET</em>] [-MR <em>SRCPREFIX</em>] ]
+</pre>
 
-**Note** that lambdapack enables webpack tree shaking but disables minimizing
-by default (see below).
+### General Options:
+
+`-o` *`OUTZIP`*
+
+Use *`OUTZIP`* as the output zip file name.
+Default is `` `${PACKAGE.name}.zip` ``.
+
+### `make` Dependency Generation Options:
+
+`-MD`
+
+Enables `make` dependency generation.
+
+`-MP`
+
+Adds an empty phony target for each dependency.  This can prevent
+errors from `make` if a dependency is later removed.
+
+`-MF` *`OUTDEPS`*
+
+Write the rules to the file *`OUTDEPS`*.  Defaults to the name of
+the output zip file with `.d` appended.
+
+`-MT` *`TARGET`*
+
+The target to define in the generated rules.  Defaults to the name of the
+output zip file.
+
+`-MR` *`SRCPREFIX`*
+
+Prepend *`SRCPREFIX`* to each dependency in the generated rules.  This can
+be useful if lambdapack is invoked in a directory different from where
+`make` is run.
 
 
-## Configuration
+
+## webpack Configuration
 
 lambdapack uses the following default webpack configuration:
 
@@ -68,7 +100,8 @@ lambdapack uses the following default webpack configuration:
 </pre>
 
 where `PACKAGE` is the contents of the local `package.json`.
-The output zip file will be named `` `${PACKAGE.name}.zip` ``.
+The output zip file will be named `` `${PACKAGE.name}.zip` ``
+(unless overridden by `-o`).
 
 By default,`mode` is set to `production` to enable tree shaking, while
 `optimization.minimize` is set to `false` to facilitate debugging in the AWS
@@ -87,7 +120,40 @@ customized by including them in a block in `package.json`, for example:
   ...
 ```
 
-## Build Reproducibility
+
+## `make` Dependency Generation
+
+lambdapack is capable of outputting dependency information as rules for `make`
+using the stats data provided by webpack.  This can be useful in AWS projects
+with multiple lambdas that share common (but unpackaged) project-specific
+modules.
+
+The generated rules will include the zip file as a target with the webpack
+bundle's assets' source files as the zip's dependencies.  However, any assets
+from `node_modules` will be represented by a single dependency on
+`node_modules` itself.
+
+Dependency generation is configured using command line options.
+See **Invoking lambdapack** above.
+
+
+## Additional Notes
+
+### ES6 and webpack Optimization
+
+lambdapack is intended for use with ES6-style module imports and exports
+(though their use may not be required).  It is known to work when the Lambda
+handler is exported from the main/entry file as an ES6 named export.
+
+For optimizing deployment package size, lambdapack relies entirely on related
+features of webpack, including tree shaking.  As tree shaking requires ES6
+module syntax, better results may be had with shake-friendly modules:
+those that use `import`/`export` and that accurately advertise `sideEffects`.
+
+**Note** that lambdapack enables webpack tree shaking but disables minimizing
+by default (see **webpack Configuration** above).
+
+### Build Reproducibility
 
 Some AWS tooling, such as `aws cloudformation package`, uses hashes of
 Lambda deployment packages to (effectively) determine if a function
@@ -101,35 +167,4 @@ CloudFormation updates to the Lambda function.
 To mitigate this, lambdapack applies a fixed timestamp to the files in the
 zip archive.  If the webpack output does not change from one run to the next,
 the zip archives produced by lambdapack should be identical.
-
-## `make` Dependency Generation
-
-lambdapack is capable of outputting dependency information as rules for `make`
-using the stats data provided by webpack.  This can be useful in AWS projects
-with multiple lambdas that share common (but unpackaged) project-specific
-modules.
-
-The generated rules will include the zip file as a target with the webpack
-bundle's assets' source files as the zip's dependencies.  However, all assets
-from `node_modules` will be represented by a single dependency on
-`node_modules` itself.
-
-The following command line options control `make` dependency generation:
-
-<pre>
--MD [-MP] [-MF <em>OUTFILE</em>] [-MT <em>TARGET</em>] [-MR <em>SRCPREFIX</em>]
-</pre>
-
-Where:
-
-* `-MD` enables `make` dependency generation.
-* `-MP` adds an empty phony target for each dependency.  This can prevent
-errors from `make` if a dependency is later removed.
-* `OUTFILE` is the name of the file where the rules are written.  Defaults to
-the name of the output zip file with `.d` appended.
-* `TARGET` is the target to define in the generated rules.  Defaults to the
-name of the output zip file.
-* `SRCPREFIX` is prepended to each dependency in the rules.  This can
-be useful if lambdapack is invoked in a directory different from where
-`make` is run.
 
