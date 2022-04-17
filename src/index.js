@@ -117,7 +117,7 @@ const depsFromModuleStats = (m) => {
 const depsFromStats = (stats) => [...new Set([
     ...makedep.otherDeps,
     ...stats.toJson('detailed').modules.map(m => {
-        if (m.chunks.length === 0 || m.name.startsWith('external '))
+        if (m.chunks.length === 0 || m.name.startsWith('webpack/runtime/'))
           return []
         else
           return depsFromModuleStats(m)
