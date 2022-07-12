@@ -105,6 +105,9 @@ compiler.outputFileSystem = outfs
 
 
 const depsFromModuleStats = (m) => {
+    if (   m.name.startsWith('external ')
+        || m.name.startsWith('webpack/runtime/'))
+      return []
     const nodeModules = m.name.match(/^[\.\/]*\/node_modules\//)
     if (nodeModules)
       return [nodeModules[0].slice(0, -1)]
@@ -117,7 +120,7 @@ const depsFromModuleStats = (m) => {
 const depsFromStats = (stats) => [...new Set([
     ...makedep.otherDeps,
     ...stats.toJson('detailed').modules.map(m => {
-        if (m.chunks.length === 0 || m.name.startsWith('webpack/runtime/'))
+        if (m.chunks.length === 0)
           return []
         else
           return depsFromModuleStats(m)
