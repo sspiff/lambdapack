@@ -1,6 +1,6 @@
 {
   "name": "@sspiff/lambdapack",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Bundles modules for the AWS Lambda Node.js runtime (using webpack)",
   "keywords": ["webpack", "lambda", "aws"],
   "main": "src/index.js",
