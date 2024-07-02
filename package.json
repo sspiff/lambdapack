@@ -16,9 +16,6 @@
     "type": "git",
     "url": "git+https://github.com/sspiff/lambdapack.git"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "bugs": {
     "url": "https://github.com/sspiff/lambdapack/issues"
   },
